@@ -1,0 +1,81 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=746
+
+Sometimes we want to to change the behavior of a built-in command so end up creating a custom command, and we wish to reuse the built-in command name for it. E.g., :Runtime to replace :runtime, :Find to replace :find. I myself wanted to replace :qa with :QA (see http://vim.wikia.com/wiki/Tabclose_instead_of_quit-all), but it is hard to remember to type :QA instead of :qa everytime, that is why I created this plugin.
+
+This plugin is just a wrapper on top of command-line abbreviations (:cabbr), to work around the big disadvantages of :cabbr. With plain :cabbr, the expansion happens anywhere the abbreviation appears while typing command-line. E.g., if you create abbreviation from runtime->Runtime, then the following will not work as you expect:
+
+:cnoreabbr runtime Runtime
+:%s/runtime/runduration/g
+
+What would actually execute is:
+
+:%s/Runtime/runduration/g
+
+Which is not the same. The other problem is cabbr's trigger not only at the command-line, but also at search prompt, at the input prompt and any other prompts (see :help getcmdtype()). To avoid those unexpected expansions, cmdalias utilizes a light-weight wrapper function that expands the abbreviation only when it is typed as the first word of the ex command (":" prompt). So, instead of the below:
+
+:cnoreabbr runtime Runtime
+
+You would use this:
+
+:call CmdAlias('runtime', 'Runtime')
+
+or simply,
+
+:Alias runtime Runtime
+
+These aliases pretty much work like the bash aliases. If you don't want the expansion to temporarily happen even at the beginning of a command, you have two options:
+- After entering the command and before typing the next command press <C-V> (e.g., <C-V><Space>)
+- Start the command-line with a space and then enter the command.
+
+The CmdAlias() function takes a 3rd optional argument called "flags" for which you can pass options such as "<buffer>" to make the alias local to the current buffer.
+
+Here is the description from file header for more details:
+Usage:
+    :call CmdAlias('<lhs>', '<rhs>', [flags])
+    or
+    :Alias <lhs> <rhs> [flags]
+                                                                             
+    :UnAlias <lhs> ...
+    :Aliases [<lhs> ...]
+                                                                             
+Ex:
+    :Alias runtime Runtime
+    :Alias find Find
+    :Aliases
+    :UnAlias find
+                                                                             
+Description:
+  - Vim doesn't allow us to create user-defined commands unless they start
+    with an uppercase letter. I find this annoying and constrained when it
+    comes to overriding built-in commands with my own. To override built-in
+    commands, we often have to create a new command that has the same name
+    as the built-in but starting with an uppercase letter (e.g., "Cd"
+    instead of "cd"), and remember to use that everytime (besides the
+    fact that typing uppercase letters take more effort). An alternative is
+    to use the :cabbr to create an abbreviation for the built-in command
+    (:cmap is not good) to the user-defined command (e.g., "cabbr cd Cd").
+    But this would generally cause more inconvenience because the
+    abbreviation gets expanded no matter where in the command-line you use
+    it. This is where the plugin comes to your rescue by arranging the cabbr
+    to expand only if typed as the first word in the command-line, in a
+    sense working like the aliases in csh or bash.
+  - The plugin provides a function to define command-line abbreviations such
+    a way that they are expanded only if they are typed as the first word of
+    a command (at ":" prompt). The same rules that apply to creating a
+    :cabbr apply to the second argument of CmdAlias() function too. You can
+    pass in optional flags (such as <buffer>) to the :cabbr command through
+    the third argument.
+  - The :cabbr's created this way, work like the bash aliases, except that
+    in this case, the alias is substituted in-place followed by the rules
+    mentioned in the |abbreviations|, and no arguments can be defined.
+Drawbacks:
+  - If the <rhs> is not of the same size as <lhs>, the in-place expansion
+    feels odd.
+  - Since the expansion is in-place, Vim command-line history saves the
+    <rhs>, not the <lhs>. This means, you can't retrieve a command from
+    history by partially typing the <lhs> (you have to instead type the
+    <rhs> for this purpose).
+
+
+
+Search_key_words: cmdalias Hari Krishna Dara cmap alias cmdalias.vim
