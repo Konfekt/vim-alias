@@ -1,54 +1,53 @@
 " cmdalias.vim: Create aliases for Vim commands.
-" Author: Hari Krishna <hari_vim@yahoo.com>
-" Last Change: 14-Jul-2003 @ 20:00
+" Author: Hari Krishna Dara (hari_vim at yahoo dot com)
+" Last Change: 20-Apr-2006 @ 11:35
 " Created:     07-Jul-2003
-" Requires: Vim-6.0 or higher, curcmdmode.vim(1.0)
-" Version: 1.0.1
+" Requires: Vim-7.0 or higher
+" Depends On: multvals.vim, genutils.vim
+" Version: 2.0.1
 " Licence: This program is free software; you can redistribute it and/or
 "          modify it under the terms of the GNU General Public License.
 "          See http://www.gnu.org/copyleft/gpl.txt 
 " Download From:
 "     http://www.vim.org/script.php?script_id=745
 " Usage:
-"     call CmdAlias('cheese', 'Cheese')
+"     call CmdAlias('cheese', 'Cheese', [flags])
 " Description:
+"   - Vim doesn't allow us to create user-defined commands unless they start
+"     with an uppercase letter. I find this annoying and constrained when it
+"     comes to overriding built-in commands with my own. To override built-in
+"     commands, we often have to create a new command that has the same name
+"     as the built-in but starting with an uppercase letter (e.g., "Cd"
+"     instead of "cd"), and remember to use that everytime (besides the
+"     fact that typing uppercase letters take more effort). An alternative is
+"     to use the :cabbr to create an abbreviation for the built-in command
+"     (:cmap is not good) to the user-defined command (e.g., "cabbr cd Cd").
+"     But this would generally cause more inconvenience because the
+"     abbreviation gets expanded no matter where in the command-line you use
+"     it. This is where the plugin comes to your rescue by arranging the cabbr
+"     to expand only if typed as the first word in the command-line, in a
+"     sense working like the aliases in csh or bash.
 "   - The plugin provides a function to define command-line abbreviations such
-"     a way that they are expanded only if they are typed at the first word of
-"     a command (at ":" prompt).
-"   - The :cabbr's created work like the bash aliases, except that in this
-"     case, the alias is substituted in-place followed by the rules mentioned
-"     in the |abbreviations|. Since, user-defined commands can not start with
-"     a lowercase letter, these aliases can be used as an alternative way of
-"     defining new commands that are easier to type (or just override Vim's
-"     built-in commands with that of your own).
-" WARNING:
-"   - For some unknown reasons, Vim seems to expand the command-line
-"     abbreviations when they occur as part of mappings typed on command-line,
-"     and because of the way the plugin implements aliasing, this could fail
-"     the map execution. E.g., say you defined a new :cabbr as
-"
-"	  :cabbr cheese Cheese
-"
-"     and say you or one of the plugins you installed, defined the
-"     following mapping (you can actually try this first and the previous
-"     command next on your command-line to see the issue in action):
-"
-"	  :nnoremap <F12> :call input('Say cheese:')<CR>
-"
-"     Now when you press <F12>, you can see that the message appears as 'Say
-"     Cheese' instead of the expected 'Say cheese', this is because Vim
-"     unexpectedly substituted 'cheese' with 'Cheese' because of the
-"     previous abbreviation. This is an unexpected behavior and so until
-"     the problem is fixed in Vim, care must be taken in choosing names for
-"     aliases such that they are less likely to interfere with the mappings.
+"     a way that they are expanded only if they are typed as the first word of
+"     a command (at ":" prompt). The same rules that apply to creating a
+"     :cabbr apply to the second argument of CmdAlias() function too. You can
+"     pass in optional flags (such as <buffer>) to the :cabbr command through
+"     the third argument.
+"   - The :cabbr's created this way, work like the bash aliases, except that
+"     in this case, the alias is substituted in-place followed by the rules
+"     mentioned in the |abbreviations|, and no aruments can be defined.
 " TODO:
-"   - I should avoid the screen from getting redrawn when the alias gets
-"     expanded.
+"   - It will be nice to recognize alias after certain vim commands that
+"     take other commands as arguments, such as verbose or debug.
 
 if exists("loaded_cmdalias")
   finish
 endif
-let loaded_cmdalias = 1
+if v:version < 700
+  echomsg "cmdalias: You need Vim 7.0 or higher"
+  finish
+endif
+let loaded_cmdalias = 200
 
 " Make sure line-continuations won't cause any problem. This will be restored
 "   at the end
@@ -56,80 +55,26 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Define a new command alias.
-function! CmdAlias(lhs, rhs)
-  exec "cabbr ".a:lhs." ".a:lhs.s:posMarker.
-	\ "<Plug>CCMC-C<Plug>CCMCCM".
-        \ "<Plug>CCMC-R=<SID>CmdAlias('".a:lhs."', '".a:rhs."')<Plug>CCMCR"
-	\ .s:plugAbbrevMap."<Plug>CCMC-R=<SID>ClearAbbrevMap()<Plug>CCMCR"
+function! CmdAlias(lhs, rhs, ...)
+  if a:0 > 0
+    let flags = a:1.' '
+  else
+    let flags = ''
+  endif
+  exec 'cnoreabbr <expr> '.flags.a:lhs.
+	\ " <SID>ExpandAlias('".a:lhs."', '".a:rhs."')"
 endfunction
 
-
-" Marker for the cursor position where the abbreviation got expanded.
-let s:posMarker = "<>CuRpOs<>"
-" WORK-AROUND for control keys in cabbr don't expand if returned from an expr.
-" This is the map that will be assigned the number of <Left>'s needed to
-"   position the cursor appropriately. This will initially (and after every
-"   use) be mapped to nothing. This is set to something that is hard to be
-"   typed, however I am making this very short-lived, so user shouldn't even
-"   see it.
-let s:plugAbbrevMap = "<>CmDaLiAs<>"
-
-"
-" Assumes that the command to-be-processed exists as the last item in the "cmd"
-" history. Modifies the history to reflect the changes.
-"
-function! s:CmdAlias(lhs, rhs)
-  let histList = ''
-  if CCMGetCCM() == ":"
-    let histList = "cmd"
-  elseif CCMGetCCM() == "/" || CCMGetCCM() == "?"
-    let histList = "search"
-  endif
-  if histList == '' " Just to be cautious.
-    return rhs
-  endif
-
-  let newVal = histget(histList, -1)
-  let curPos = stridx(newVal, s:posMarker)
-  let newVal = substitute(newVal, s:posMarker, '', '')
-  let nLeft = strlen(newVal) - curPos
-  "echomsg "oldvalue = " . newVal
-  call histdel(histList, -1)
-  if newVal =~ '^'.a:lhs && curPos == strlen(a:lhs)
-    let newVal = substitute(newVal, '^'.a:lhs, a:rhs, '')
-    "echomsg "newvalue = " . newVal
-    " Work-around for "C-C doesn't add the item to history from second time "
-    " "onwards for some reason". I couldn't figure out why. But it now leaves a
-    " copy in the history for the last used command mode, even if you cancel
-    " the command.
-    if histget(histList, -1) != newVal
-      call histadd(histList, newVal)
+function! s:ExpandAlias(lhs, rhs)
+  if getcmdtype() == ":"
+    " Determine if we are at the start of the command-line.
+    " getcmdpos() is 1-based.
+    let firstWord = strpart(getcmdline(), 0, getcmdpos())
+    if firstWord == a:lhs
+      return a:rhs
     endif
   endif
-  " This is the simplest and should have worked according to Vim's doc, but it
-  " doesn't work. I reported the issue on Vim ML, but there was no fix/solution.
-  "return newVal . s:MakeRepStr(nLeft, "\<Left>") " This doesn't work.
-  if nLeft < 1
-    exec "cnoremap " . s:plugAbbrevMap . ' <Nop>'
-  else
-    exec "cnoremap " . s:plugAbbrevMap . ' ' . s:MakeRepStr(nLeft, "<Left>")
-  endif
-  return newVal
-endfunction
-
-function! s:ClearAbbrevMap()
-  silent! exec 'cunmap ' . s:plugAbbrevMap
-  return ""
-endfunction
-
-function! s:MakeRepStr(nRep, str)
-  let i = 0
-  let leftStr = ''
-  while i < a:nRep
-    let leftStr = leftStr . a:str
-    let i = i + 1
-  endwhile
-  return leftStr
+  return a:lhs
 endfunction
 
 " Restore cpo.
