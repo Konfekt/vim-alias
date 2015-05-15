@@ -73,8 +73,8 @@ if !exists('g:cmdaliasCmdPrefixes')
   let g:cmdaliasCmdPrefixes = 'verbose debug silent redir'
 endif
 
-command! -nargs=+ Alias :call CmdAlias(<f-args>)
-command! -nargs=* UnAlias :call UnAlias(<f-args>)
+command! -nargs=+ Alias :call cmdalias#alias(<f-args>)
+command! -nargs=* UnAlias :call cmdalias#unalias(<f-args>)
 command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
 
 if ! exists('s:aliases')
@@ -82,7 +82,7 @@ if ! exists('s:aliases')
 endif
 
 " Define a new command alias.
-function! CmdAlias(lhs, ...)
+function! cmdalias#alias(lhs, ...)
   let lhs = a:lhs
   if lhs !~ '^\w\+$'
     echohl ErrorMsg | echo 'Only word characters are supported on <lhs>' | echohl NONE
@@ -123,7 +123,7 @@ function! s:ExpandAlias(lhs, rhs)
   return a:lhs
 endfunction
 
-function! UnAlias(...)
+function! cmdalias#unalias(...)
   if a:0 == 0
     echohl ErrorMsg | echo "No aliases specified" | echohl NONE
     return
