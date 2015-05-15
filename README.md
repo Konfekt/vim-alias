@@ -1,3 +1,9 @@
+CmdAlias
+========
+This is a fork of the vim.org plugin.
+This exists only because I wanted it as an autoload plugin.
+
+------------------------------
 This is a mirror of http://www.vim.org/scripts/script.php?script_id=746
 
 Sometimes we want to to change the behavior of a built-in command so end up creating a custom command, and we wish to reuse the built-in command name for it. E.g., :Runtime to replace :runtime, :Find to replace :find. I myself wanted to replace :qa with :QA (see http://vim.wikia.com/wiki/Tabclose_instead_of_quit-all), but it is hard to remember to type :QA instead of :qa everytime, that is why I created this plugin.
@@ -17,7 +23,7 @@ Which is not the same. The other problem is cabbr's trigger not only at the comm
 
 You would use this:
 
-:call CmdAlias('runtime', 'Runtime')
+:call cmdalias#alias('runtime', 'Runtime')
 
 or simply,
 
@@ -27,11 +33,11 @@ These aliases pretty much work like the bash aliases. If you don't want the expa
 - After entering the command and before typing the next command press <C-V> (e.g., <C-V><Space>)
 - Start the command-line with a space and then enter the command.
 
-The CmdAlias() function takes a 3rd optional argument called "flags" for which you can pass options such as "<buffer>" to make the alias local to the current buffer.
+The cmdalias#alias() function takes a 3rd optional argument called "flags" for which you can pass options such as "<buffer>" to make the alias local to the current buffer.
 
 Here is the description from file header for more details:
 Usage:
-    :call CmdAlias('<lhs>', '<rhs>', [flags])
+    :call cmdalias#alias('<lhs>', '<rhs>', [flags])
     or
     :Alias <lhs> <rhs> [flags]
                                                                              
@@ -62,7 +68,7 @@ Description:
   - The plugin provides a function to define command-line abbreviations such
     a way that they are expanded only if they are typed as the first word of
     a command (at ":" prompt). The same rules that apply to creating a
-    :cabbr apply to the second argument of CmdAlias() function too. You can
+    :cabbr apply to the second argument of cmdalias#alias() function too. You can
     pass in optional flags (such as <buffer>) to the :cabbr command through
     the third argument.
   - The :cabbr's created this way, work like the bash aliases, except that
