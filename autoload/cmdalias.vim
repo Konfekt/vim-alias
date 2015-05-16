@@ -6,7 +6,7 @@
 " Version: 3.0.0
 " Licence: This program is free software; you can redistribute it and/or
 "          modify it under the terms of the GNU General Public License.
-"          See http://www.gnu.org/copyleft/gpl.txt 
+"          See http://www.gnu.org/copyleft/gpl.txt
 " Download From:
 "     http://www.vim.org/script.php?script_id=745
 " Usage:
@@ -55,14 +55,14 @@
 "     history by partially typing the <lhs> (you have to instead type the
 "     <rhs> for this purpose).
 
-if exists("loaded_cmdalias")
+if exists("g:loaded_cmdalias")
   finish
 endif
 if v:version < 700
   echomsg "cmdalias: You need Vim 7.0 or higher"
   finish
 endif
-let loaded_cmdalias = 300
+let g:loaded_cmdalias = 1
 
 " Make sure line-continuations won't cause any problem. This will be restored
 "   at the end
@@ -73,39 +73,14 @@ if !exists('g:cmdaliasCmdPrefixes')
   let g:cmdaliasCmdPrefixes = 'verbose debug silent redir'
 endif
 
-command! -nargs=+ Alias :call cmdalias#alias(<f-args>)
-command! -nargs=* UnAlias :call cmdalias#unalias(<f-args>)
-command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
-
-if ! exists('s:aliases')
+if !exists('s:aliases')
   let s:aliases = {}
 endif
 
-" Define a new command alias.
-function! cmdalias#alias(lhs, ...)
-  let lhs = a:lhs
-  if lhs !~ '^\w\+$'
-    echohl ErrorMsg | echo 'Only word characters are supported on <lhs>' | echohl NONE
-    return
-  endif
-  if a:0 > 0
-    let rhs = a:1
-  else
-    echohl ErrorMsg | echo 'No <rhs> specified for alias' | echohl NONE
-    return
-  endif
-  if has_key(s:aliases, rhs)
-    echohl ErrorMsg | echo "Another alias can't be used as <rhs>" | echohl NONE
-    return
-  endif
-  if a:0 > 1
-    let flags = join(a:000[1:], ' ').' '
-  else
-    let flags = ''
-  endif
-  exec 'cnoreabbr <expr> '.flags.a:lhs.
-	\ " <SID>ExpandAlias('".lhs."', '".rhs."')"
-  let s:aliases[lhs] = rhs
+function! s:err_msg(msg)
+  echohl ErrorMsg
+  echo a:msg
+  echohl NONE
 endfunction
 
 function! s:ExpandAlias(lhs, rhs)
@@ -123,9 +98,40 @@ function! s:ExpandAlias(lhs, rhs)
   return a:lhs
 endfunction
 
+command! -nargs=+ Alias :call cmdalias#alias(<f-args>)
+command! -nargs=* UnAlias :call cmdalias#unalias(<f-args>)
+command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
+
+" Define a new command alias.
+function! cmdalias#alias(lhs, ...)
+  let lhs = a:lhs
+  if lhs !~ '^\w\+$'
+    call s:err_msg('Only word characters are supported on <lhs>')
+    return
+  endif
+  if a:0 > 0
+    let rhs = a:1
+  else
+    call s:err_msg('No <rhs> specified for alias')
+    return
+  endif
+  if has_key(s:aliases, rhs)
+    call s:err_msg(echo 'Another alias can't be used as <rhs>')
+    return
+  endif
+  if a:0 > 1
+    let flags = join(a:000[1:], ' ').' '
+  else
+    let flags = ''
+  endif
+  exec 'cnoreabbr <expr> '.flags.a:lhs.
+	\ " <SID>ExpandAlias('".lhs."', '".rhs."')"
+  let s:aliases[lhs] = rhs
+endfunction
+
 function! cmdalias#unalias(...)
   if a:0 == 0
-    echohl ErrorMsg | echo "No aliases specified" | echohl NONE
+    call s:err_msg('No aliases specified')
     return
   endif
 
@@ -133,7 +139,7 @@ function! cmdalias#unalias(...)
   "let aliasesToRemove = map(filter(copy(s:aliases), 'index(a:000, v:val[0]) != -1'), 'v:val[0]')
   if len(aliasesToRemove) != a:0
     let badAliases = filter(copy(a:000), 'index(aliasesToRemove, v:val) == -1')
-    echohl ErrorMsg | echo "No such aliases: " . join(badAliases, ' ') | echohl NONE
+    call s:err_msg('No such aliases: ' . join(badAliases, ' '))
     return
   endif
   for alias in aliasesToRemove
