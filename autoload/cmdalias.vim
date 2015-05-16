@@ -10,7 +10,7 @@
 " Download From:
 "     http://www.vim.org/script.php?script_id=745
 " Usage:
-"     :call CmdAlias('<lhs>', '<rhs>', [flags])
+"     :call cmdalias#alias('<lhs>', '<rhs>', [flags])
 "     or
 "     :Alias <lhs> <rhs> [flags]
 "
@@ -41,7 +41,7 @@
 "   - The plugin provides a function to define command-line abbreviations such
 "     a way that they are expanded only if they are typed as the first word of
 "     a command (at ":" prompt). The same rules that apply to creating a
-"     :cabbr apply to the second argument of CmdAlias() function too. You can
+"     :cabbr apply to the second argument of cmdalias#alias() function too. You can
 "     pass in optional flags (such as <buffer>) to the :cabbr command through
 "     the third argument.
 "   - The :cabbr's created this way, work like the bash aliases, except that
