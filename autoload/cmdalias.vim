@@ -10,7 +10,7 @@
 " Download From:
 "     http://www.vim.org/script.php?script_id=745
 " Usage:
-"     :call cmdalias#alias('<lhs>', '<rhs>', [flags])
+"     :call cmdalias#add('<lhs>', '<rhs>', [flags])
 "     or
 "     :Alias <lhs> <rhs> [flags]
 "
@@ -41,7 +41,7 @@
 "   - The plugin provides a function to define command-line abbreviations such
 "     a way that they are expanded only if they are typed as the first word of
 "     a command (at ":" prompt). The same rules that apply to creating a
-"     :cabbr apply to the second argument of cmdalias#alias() function too. You can
+"     :cabbr apply to the second argument of cmdalias#add() function too. You can
 "     pass in optional flags (such as <buffer>) to the :cabbr command through
 "     the third argument.
 "   - The :cabbr's created this way, work like the bash aliases, except that
@@ -98,12 +98,12 @@ function! s:ExpandAlias(lhs, rhs)
   return a:lhs
 endfunction
 
-command! -nargs=+ Alias :call cmdalias#alias(<f-args>)
-command! -nargs=* UnAlias :call cmdalias#unalias(<f-args>)
+command! -nargs=+ Alias :call cmdalias#add(<f-args>)
+command! -nargs=* UnAlias :call cmdalias#rem(<f-args>)
 command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
 
 " Define a new command alias.
-function! cmdalias#alias(lhs, ...)
+function! cmdalias#add(lhs, ...)
   let lhs = a:lhs
   if lhs !~ '^\w\+$'
     call s:err_msg('Only word characters are supported on <lhs>')
@@ -129,7 +129,7 @@ function! cmdalias#alias(lhs, ...)
   let s:aliases[lhs] = rhs
 endfunction
 
-function! cmdalias#unalias(...)
+function! cmdalias#rem(...)
   if a:0 == 0
     call s:err_msg('No aliases specified')
     return
