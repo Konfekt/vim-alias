@@ -1,68 +1,17 @@
-" cmdalias.vim: Create aliases for Vim commands.
-" Author: Hari Krishna Dara (hari.vim at gmail dot com)
-" Last Change: 04-Sep-2009 @ 20:16
-" Created:     07-Jul-2003
-" Requires: Vim-7.0 or higher
-" Version: 3.0.0
-" Licence: This program is free software; you can redistribute it and/or
-"          modify it under the terms of the GNU General Public License.
-"          See http://www.gnu.org/copyleft/gpl.txt 
-" Download From:
-"     http://www.vim.org/script.php?script_id=745
-" Usage:
-"     :call CmdAlias('<lhs>', '<rhs>', [flags])
-"     or
-"     :Alias <lhs> <rhs> [flags]
-"
-"     :UnAlias <lhs> ...
-"     :Aliases [<lhs> ...]
-"
-" Ex:
-"     :Alias runtime Runtime
-"     :Alias find Find
-"     :Aliases
-"     :UnAlias find
-"
-" Description:
-"   - Vim doesn't allow us to create user-defined commands unless they start
-"     with an uppercase letter. I find this annoying and constrained when it
-"     comes to overriding built-in commands with my own. To override built-in
-"     commands, we often have to create a new command that has the same name
-"     as the built-in but starting with an uppercase letter (e.g., "Cd"
-"     instead of "cd"), and remember to use that everytime (besides the
-"     fact that typing uppercase letters take more effort). An alternative is
-"     to use the :cabbr to create an abbreviation for the built-in command
-"     (:cmap is not good) to the user-defined command (e.g., "cabbr cd Cd").
-"     But this would generally cause more inconvenience because the
-"     abbreviation gets expanded no matter where in the command-line you use
-"     it. This is where the plugin comes to your rescue by arranging the cabbr
-"     to expand only if typed as the first word in the command-line, in a
-"     sense working like the aliases in csh or bash.
-"   - The plugin provides a function to define command-line abbreviations such
-"     a way that they are expanded only if they are typed as the first word of
-"     a command (at ":" prompt). The same rules that apply to creating a
-"     :cabbr apply to the second argument of CmdAlias() function too. You can
-"     pass in optional flags (such as <buffer>) to the :cabbr command through
-"     the third argument.
-"   - The :cabbr's created this way, work like the bash aliases, except that
-"     in this case, the alias is substituted in-place followed by the rules
-"     mentioned in the |abbreviations|, and no arguments can be defined.
-" Drawbacks:
-"   - If the <rhs> is not of the same size as <lhs>, the in-place expansion
-"     feels odd.
-"   - Since the expansion is in-place, Vim command-line history saves the
-"     <rhs>, not the <lhs>. This means, you can't retrieve a command from
-"     history by partially typing the <lhs> (you have to instead type the
-"     <rhs> for this purpose).
+" FORK by EPN of Hari Krishna Dara's cmdalias.vim 3.0.0 that
+"   - allows for aliases with non-alphabetic characters, and
+"   - allows for aliases of commands that can be preceded by ranges,
+"   - adds a documentation, and
+"   - does some additional sanity checks.
 
-if exists("loaded_cmdalias")
+if exists("g:loaded_cmdalias")
   finish
 endif
 if v:version < 700
   echomsg "cmdalias: You need Vim 7.0 or higher"
   finish
 endif
-let loaded_cmdalias = 300
+let g:loaded_cmdalias = 301
 
 " Make sure line-continuations won't cause any problem. This will be restored
 "   at the end
@@ -70,10 +19,14 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 if !exists('g:cmdaliasCmdPrefixes')
-  let g:cmdaliasCmdPrefixes = 'verbose debug silent redir'
+  let g:cmdaliasCmdPrefixes = ['\d*verb\%(ose\)\?', 'debug', 'sil\%(ent\)\?!\?', 'redir\?!\?']
 endif
+let s:range_pattern =  '\v(%('
+      \ . '%(\%|[`''][.\^''"{}()<>[\][:alnum:]]|[.$]|\d+|\\[/?&]|/.+/?|\?.+\??)%([+\-]\d*)*'
+      \ . '%([,;]%([`''][.\^''"(){}<>[\][:alnum:]]|[.$]|\d+|\\[/?&]|/.+/|/?.+/?)%([+\-]\d*)*)*'
+      \ . ')|)\s*'
 
-command! -nargs=+ Alias :call CmdAlias(<f-args>)
+command! -nargs=+ Alias   :call CmdAlias(<f-args>)
 command! -nargs=* UnAlias :call UnAlias(<f-args>)
 command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
 
@@ -82,45 +35,66 @@ if ! exists('s:aliases')
 endif
 
 " Define a new command alias.
-function! CmdAlias(lhs, ...)
-  let lhs = a:lhs
-  if lhs !~ '^\w\+$'
-    echohl ErrorMsg | echo 'Only word characters are supported on <lhs>' | echohl NONE
+function! CmdAlias(...)
+
+  if a:0 is 0
+    echohl ErrorMsg | echo 'Neither <lhs> nor <rhs> specified for alias' | echohl NONE
     return
   endif
-  if a:0 > 0
-    let rhs = a:1
+
+  let numparams = 0
+
+  if a:1 ==# '-range' && a:0 > 2
+    let range = 1
+    let numparams += 1
+    let lhs = a:2
   else
+    let range = 0
+    let lhs = a:1
+  endif
+
+  if a:0 is 1
     echohl ErrorMsg | echo 'No <rhs> specified for alias' | echohl NONE
     return
+  else
+    exe 'let rhs = a:' . string(2 + numparams)
   endif
+
+  if a:0 > (2 + numparams)
+    exe 'let flags = a:' . string(3 + numparams)
+  else
+    let flags = ''
+  endif
+
+  if !empty(flags) && flags isnot# '<buffer>'
+    echohl ErrorMsg | echo 'Only <buffer> allowed as optional flag' | echohl NONE
+    return
+  endif
+
   if has_key(s:aliases, rhs)
     echohl ErrorMsg | echo "Another alias can't be used as <rhs>" | echohl NONE
     return
   endif
-  if a:0 > 1
-    let flags = join(a:000[1:], ' ').' '
-  else
-    let flags = ''
-  endif
-  exec 'cnoreabbr <expr> '.flags.a:lhs.
-	\ " <SID>ExpandAlias('".lhs."', '".rhs."')"
+
+  exec 'cnoreabbr <expr> ' . flags . lhs .
+        \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ")"
   let s:aliases[lhs] = rhs
 endfunction
 
-function! s:ExpandAlias(lhs, rhs)
+function! s:ExpandAlias(lhs, rhs, range)
+  let prefixes_pattern = '\m\s*\%(\%(\m' . join(g:cmdaliasCmdPrefixes, '\|\m') . '\)\s\+\)\?'
+
   if getcmdtype() == ":"
     " Determine if we are at the start of the command-line.
     " getcmdpos() is 1-based.
     let partCmd = strpart(getcmdline(), 0, getcmdpos())
-    let prefixes = ['^'] + map(split(g:cmdaliasCmdPrefixes, ' '), '"^".v:val."!\\?"." "')
-    for prefix in prefixes
-      if partCmd =~ prefix.a:lhs.'$'
-	return a:rhs
-      endif
-    endfor
+    let alias_pattern = '\V' . escape(a:lhs,'\')
+    if partCmd =~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
+      return a:rhs
+    endif
   endif
   return a:lhs
+
 endfunction
 
 function! UnAlias(...)
@@ -158,4 +132,4 @@ endfunction
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim6:fdm=marker sw=2
+" ex:fdm=syntax sw=2
