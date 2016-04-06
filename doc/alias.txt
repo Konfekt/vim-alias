@@ -5,10 +5,15 @@ ABOUT                                               *alias-about*
 
 - The plugin provides a function to define command-line abbreviations such
   a way that they are expanded only if they are typed as the first word of
-  a command (at ":" prompt). The same rules that apply to creating a
-  :cabbr apply to the second argument of CmdAlias() function too. You can
-  pass in optional flags (such as <buffer>) to the :cabbr command through
-  the third argument.
+  a command (at ":" prompt).  You can pass in the optional flags
+
+    -buffer
+
+  to create buffer local abbreviations, and
+
+    - range
+
+  to create aliases that accept a range preceding the aliased command.
 
 - The :cabbr's created this way, work like the bash aliases, except that
   in this case, the alias is substituted in-place followed by the rules
@@ -17,21 +22,21 @@ ABOUT                                               *alias-about*
 ==============================================================================
 USAGE                                               *alias-usage*
 
-    :Alias [-range] <lhs> <rhs> [<buffer>]
+    :Alias [-range] [-buffer] <lhs> <rhs>
 
     or
 
-    :call CmdAlias(['-range'], '<lhs>', '<rhs>', ['<buffer>'])
+    :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
 
     :UnAlias <lhs> ...
     :Aliases [<lhs> ...]
 
 Examples:
 
-    :Alias   -range dg  <c-r>=&l:diff?"diffget":"dg"<cr>
-    :Alias   -range dg  diffget <buffer>
-    :Alias          man Man
-    :UnAlias        man
+    :Alias   -range         dg  <c-r>=&l:diff?"diffget":"dg"<cr>
+    :Alias   -range -buffer dg  diffget
+    :Alias                  man Man
+    :UnAlias                man
     :Aliases
 
 ==============================================================================
@@ -46,11 +51,8 @@ which an alias command may be preceded and yet expand. It defaults to
 ==============================================================================
 DRAWBACKs:
 
-- If the <rhs> is not of the same size as <lhs>, the in-place expansion
-  feels odd.
 - Since the expansion is in-place, Vim command-line history saves the
-  <rhs>, not the <lhs>. This means, you can't retrieve a command from
-  history by partially typing the <lhs> (you have to instead type the
-  <rhs> for this purpose).
+  <rhs>, not the <lhs>. This means you can't retrieve a command from
+  history by partially typing the <lhs>. Instead, type the <rhs> for this purpose.
 
 vim:ft=help:et:ts=2:sw=2:sts=2:norl:noma:nospell

@@ -36,47 +36,51 @@ endif
 
 " Define a new command alias.
 function! CmdAlias(...)
-
   if a:0 is 0
     echohl ErrorMsg | echo 'Neither <lhs> nor <rhs> specified for alias' | echohl NONE
     return
   endif
 
-  let numparams = 0
-
-  if a:1 ==# '-range' && a:0 > 2
-    let range = 1
-    let numparams += 1
-    let lhs = a:2
-  else
-    let range = 0
-    let lhs = a:1
-  endif
-
   if a:0 is 1
     echohl ErrorMsg | echo 'No <rhs> specified for alias' | echohl NONE
     return
-  else
-    exe 'let rhs = a:' . string(2 + numparams)
   endif
 
-  if a:0 > (2 + numparams)
-    exe 'let flags = a:' . string(3 + numparams)
-  else
-    let flags = ''
-  endif
-
-  if !empty(flags) && flags isnot# '<buffer>'
-    echohl ErrorMsg | echo 'Only <buffer> allowed as optional flag' | echohl NONE
+  if a:0 > 4
+    echohl ErrorMsg | echo 'Too many parameters. Use Alias [-buffer] [-range] <lhs> <rhs>!' | echohl NONE
     return
   endif
+
+  let numparams = 0
+  let range = 0
+  let bufferlocal = ''
+
+  let posparam = 1
+  while posparam <= (a:0 - 2)
+    exe 'let param = a:' . posparam
+    let posparam += 1
+    if param ==# '-range'
+      let numparams += 1 | let range = 1
+      continue
+    elseif param ==# '-buffer'
+      let numparams += 1 | let bufferlocal = '<buffer> '
+      continue
+    else
+      echohl ErrorMsg | echo 'Only -range or -buffer allowed as optional parameters' | echohl NONE
+      return
+    endif
+  endwhile
+  unlet posparam
+
+  exe 'let lhs = a:' . (1 + numparams)
+  exe 'let rhs = a:' . (2 + numparams)
 
   if has_key(s:aliases, rhs)
     echohl ErrorMsg | echo "Another alias can't be used as <rhs>" | echohl NONE
     return
   endif
 
-  exec 'cnoreabbr <expr> ' . flags . lhs .
+  exec 'cnoreabbr <expr> ' . bufferlocal . lhs .
         \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ")"
   let s:aliases[lhs] = rhs
 endfunction
