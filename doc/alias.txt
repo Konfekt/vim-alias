@@ -33,10 +33,11 @@ USAGE                                               *alias-usage*
 
 Examples:
 
-    :Alias   -range         dg  <c-r>=&l:diff?"diffget":"dg"<cr>
-    :Alias   -range -buffer dg  diffget
-    :Alias                  man Man
-    :UnAlias                man
+    :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
+    :Alias   -buffer  spl  set\ spell<bar>set spelllang=en<cr>
+    :Alias            th   tab\ help
+    :Alias            man  Man
+    :UnAlias          man
     :Aliases
 
 ==============================================================================
