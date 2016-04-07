@@ -47,7 +47,7 @@ CONFIGURATION                                        *alias-configuration*
   The variable 'g:cmdaliasCmdPrefixes' lists the patterns of all commands by
   which an alias command may be preceded and yet expand. It defaults to
 
-    ['\d*verb\(ose\)\?', 'debug', 'sil\(ent\)\?!\?', 'redir\?!\?']
+    ['\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'redir\?!\?']
 
 
 ==============================================================================

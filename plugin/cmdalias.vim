@@ -19,7 +19,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 if !exists('g:cmdaliasCmdPrefixes')
-  let g:cmdaliasCmdPrefixes = ['\d*verb\%(ose\)\?', 'debug', 'sil\%(ent\)\?!\?', 'redir\?!\?']
+  let g:cmdaliasCmdPrefixes = ['\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'redir\?!\?']
 endif
 let s:range_pattern =  '\v(%('
       \ . '%(\%|[`''][.\^''"{}()<>[\][:alnum:]]|[.$]|\d+|\\[/?&]|/.+/?|\?.+\??)%([+\-]\d*)*'
