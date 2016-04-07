@@ -53,7 +53,7 @@ function! CmdAlias(...)
 
   let numparams = 0
   let range = 0
-  let bufferlocal = ''
+  let bufferlocal = 0
 
   let posparam = 1
   while posparam <= (a:0 - 2)
@@ -63,7 +63,7 @@ function! CmdAlias(...)
       let numparams += 1 | let range = 1
       continue
     elseif param ==# '-buffer'
-      let numparams += 1 | let bufferlocal = '<buffer> '
+      let numparams += 1 | let bufferlocal = 1
       continue
     else
       echohl ErrorMsg | echo 'Only -range or -buffer allowed as optional parameters' | echohl NONE
@@ -75,12 +75,17 @@ function! CmdAlias(...)
   exe 'let lhs = a:' . (1 + numparams)
   exe 'let rhs = a:' . (2 + numparams)
 
+  if (lhs !~ '\v^\w+$' && lhs =~ '\v^.+\w+$')
+    echohl ErrorMsg | echoerr 'All non-word characters in the alias name must come at the end!' | echohl NONE
+    return
+  endif
+
   if has_key(s:aliases, rhs)
     echohl ErrorMsg | echo "Another alias can't be used as <rhs>" | echohl NONE
     return
   endif
 
-  exec 'cnoreabbr <expr> ' . bufferlocal . lhs .
+  exec 'cnoreabbr <expr>' . (bufferlocal ? '<buffer>' : '') . ' ' . lhs .
         \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ")"
   let s:aliases[lhs] = rhs
 endfunction

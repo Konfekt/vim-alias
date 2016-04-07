@@ -1,15 +1,11 @@
-This plugin improves on cmdalias.vim 3. 0 by Hari Krishna Dara and lets you define
-command-line abbreviations which only expand at the beginning of the command prompt.
+This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt.
 
 You can pass in the optional flags
 
-  -buffer
+  -buffer  or  -range
 
-to create buffer local abbreviations, and
-
-  - range
-
-to create aliases that accept a range preceding the aliased command.
+to create buffer local aliases or ones that accept a range that precedes the
+aliased command.
 
 These command line abbreviations work like the bash aliases, except that
 the alias is substituted in-place.
@@ -30,11 +26,16 @@ USAGE
 Examples:
 
     :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
-    :Alias   -buffer  spl  set\ spell<bar>set spelllang=en<cr>
+    :Alias   -buffer  spl  setlocal\ spell<bar>setlocal\ spelllang=en
+    :Alias            w!!  write\ !sudo\ tee\ >\ /dev/null\ %
+    :Alias            F    find\ *<c-r>=EatChar("\ ")<cr>
     :Alias            th   tab\ help
-    :Alias            man  Man
-    :UnAlias          man
+    :Alias            sft  setfiletype
+    :Alias            g    !git
+    :UnAlias          g
     :Aliases
+
+  See :help abbreviations for Eatchar(c).
 
 ---
 
@@ -45,3 +46,13 @@ which an alias command may be preceded and yet expand. It defaults to
 
   ['\d*verb\(ose\)\?', 'debug', 'sil\(ent\)\?!\?', 'redir\?!\?']
 
+---
+
+This plugin is based and improves on cmdalias.vim 3. 0 by Hari Krishna Dara by
+
+- allowing for aliases of commands preceded by a range (like :Alias -range dg
+  diffget),
+- allowing for alias names ending in non-word chars (like :Alias w!! ...),
+- having a Vim documentation, and
+- more checks for proper usage, more consistent parameter parsing and a finer
+  check for blanks or commands (such as :  silent! ) preceding the alias.
