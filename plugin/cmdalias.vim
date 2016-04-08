@@ -72,9 +72,11 @@ function! CmdAlias(...)
 
   exe 'let lhs = a:' . (1 + numparams)
   exe 'let rhs = a:' . (2 + numparams)
+  " double all single quotes so that cabbrev expression correctly interpeted
+  let  rhs = substitute(rhs, "'", "''", 'g')
 
-  if (lhs !~ '\v^\w+$' && lhs =~ '\v^.+\w+$')
-    echohl ErrorMsg | echoerr 'All non-word characters in the alias name must come at the end!' | echohl NONE
+  if lhs !~ '\v^(\w*\W*$|\W+\w)$'
+    echohl ErrorMsg | echoerr 'All non-word characters in the alias name must either come at the end or at the beginning followed by at most one word character!' | echohl NONE
     return
   endif
 
