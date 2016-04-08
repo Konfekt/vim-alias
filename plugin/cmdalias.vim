@@ -61,10 +61,8 @@ function! CmdAlias(...)
     let posparam += 1
     if param ==# '-range'
       let numparams += 1 | let range = 1
-      continue
     elseif param ==# '-buffer'
       let numparams += 1 | let bufferlocal = 1
-      continue
     else
       echohl ErrorMsg | echo 'Only -range or -buffer allowed as optional parameters' | echohl NONE
       return
