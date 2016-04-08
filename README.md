@@ -1,30 +1,28 @@
-This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt.
+# vim-alias
 
-You can pass in the optional flags
+This plugin lets you define command-line abbreviations by `:Alias` which only expand at the beginning of the command prompt.
 
-  -buffer  or  -range
+You can pass the optional parameters
 
-to create buffer local aliases or ones that accept a range that precedes the
-aliased command.
+  `-buffer`  or  `-range`
+
+to create a buffer local alias or one that accepts a range preceding the
+alias.
 
 These command line abbreviations work like the bash aliases, except that
 the alias is substituted in-place.
 
----
+## Usage
 
-USAGE
-
+```vim
     :Alias [-range] [-buffer] <lhs> <rhs>
-
-    or
-
-    :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
-
     :UnAlias <lhs> ...
     :Aliases [<lhs> ...]
+```
 
-Examples:
+### Examples:
 
+```vim
     :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
     :Alias   -buffer  spl  setlocal\ spell<bar>setlocal\ spelllang=en
     :Alias            w!!  write\ !sudo\ tee\ >\ /dev/null\ %
@@ -34,21 +32,32 @@ Examples:
     :Alias            g    !git
     :UnAlias          g
     :Aliases
+```
 
   See :help abbreviations for Eatchar(c).
 
----
+## Configuration
 
-CONFIGURATION
-
-The variable 'g:cmdaliasCmdPrefixes' lists the patterns of all commands by
+The variable `g:cmdaliasCmdPrefixes` lists the patterns of all commands by
 which an alias command may be preceded and yet expand. It defaults to
 
-  ['\d*verb\(ose\)\?', 'debug', 'sil\(ent\)\?!\?', 'redir\?!\?']
+```vim
+  let g:cmdaliasCmdPrefixes = ['\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'redir\?!\?']
+```
 
----
+## Installation
 
-This plugin is based and improves on cmdalias.vim 3. 0 by Hari Krishna Dara by
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then add the
+following line to your `vimrc` file:
+
+```vim
+Plug 'Konfekt/vim-alias
+```
+
+Credits
+-------
+
+This plugin builds and improves on cmdalias.vim 3. 0 by Hari Krishna Dara by
 
 - allowing for aliases of commands preceded by a range (like :Alias -range dg
   diffget),
