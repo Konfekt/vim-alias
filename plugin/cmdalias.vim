@@ -19,7 +19,11 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 if !exists('g:cmdaliasCmdPrefixes')
-  let g:cmdaliasCmdPrefixes = ['\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'redir\?!\?']
+  let g:cmdaliasCmdPrefixes = [
+        \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
+        \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
+        \ '\%(\%([.$]\|\d\+\)\%([,;]\%([.$]\|\d\+\)\)*\)\?\s*' .
+        \ '\%(argdo\?!\?\|bufdo\?!\?\|windo\?\|tabdo\?\)' ]
 endif
 let s:range_pattern =  '\v(%('
       \ . '%(\%|[`''][.\^''"{}()<>[\][:alnum:]]|[.$]|\d+|\\[/?&]|/.+/?|\?.+\??)%([+\-]\d*)*'
@@ -91,7 +95,7 @@ function! CmdAlias(...)
 endfunction
 
 function! s:ExpandAlias(lhs, rhs, range)
-  let prefixes_pattern = '\m\s*\%(\%(\m' . join(g:cmdaliasCmdPrefixes, '\|\m') . '\)\s\+\)\?'
+  let prefixes_pattern = '\m\s*\%(\%(\m' . join(g:cmdaliasCmdPrefixes, '\|\m') . '\)\s\+\)*'
 
   if getcmdtype() == ":"
     " Determine if we are at the start of the command-line.
