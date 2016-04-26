@@ -1,0 +1,64 @@
+*alias* *alias.txt*
+
+==============================================================================
+ABOUT                                               *alias-about*
+
+  This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt.
+
+  You can pass in the optional flags
+
+    -buffer  or  -range
+
+  to create buffer local aliases or ones that accept a range that precedes the
+  aliased command.
+
+  These command line abbreviations work like the bash aliases, except that
+  the alias is substituted in-place.
+
+==============================================================================
+USAGE                                               *alias-usage*
+
+    :Alias [-range] [-buffer] <lhs> <rhs>
+
+    or
+
+    :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
+
+    :UnAlias <lhs> ...
+    :Aliases [<lhs> ...]
+
+  Examples:
+
+    :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
+    :Alias   -buffer  spl  setlocal\ spell<bar>setlocal\ spelllang=en
+    :Alias            w!!  write\ !sudo\ tee\ >\ /dev/null\ %
+    :Alias            th   tab\ help
+    :Alias            F    find\ *<c-r>=EatChar("\ ")<cr>
+    :Alias            sft  setfiletype
+    :Alias            g    !git
+    :UnAlias          g
+    :Aliases
+
+  See :help abbreviations for Eatchar(c).
+
+==============================================================================
+CONFIGURATION                                        *alias-configuration*
+
+  The variable 'g:cmdaliasCmdPrefixes' lists the patterns of all commands by
+  which an alias command may be preceded and yet expand. It defaults to
+
+  let g:cmdaliasCmdPrefixes = [
+    \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
+    \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
+    \ '\%(\%([.$]\|\d\+\)\%([,;]\%([.$]\|\d\+\)\)*\)\?\s*' .
+    \ '\%(argdo\?!\?\|bufdo\?!\?\|windo\?\|tabdo\?\)' ]
+
+
+==============================================================================
+DRAWBACKs:
+
+  - Since the expansion is in-place, Vim command-line history saves the
+    <rhs>, not the <lhs>. This means you can't retrieve a command from
+    history by partially typing the <lhs>. Instead, type the <rhs> for this purpose.
+
+vim:ft=help:et:ts=2:sw=2:sts=2:norl:noma:nospell
