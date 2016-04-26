@@ -79,8 +79,8 @@ function! CmdAlias(...)
   " double all single quotes so that cabbrev expression correctly interpeted
   let  rhs = substitute(rhs, "'", "''", 'g')
 
-  if lhs !~ '\v^(\w*\W*$|\W+\w)$'
-    echohl ErrorMsg | echoerr 'All non-word characters in the alias name must either come at the end or at the beginning followed by at most one word character!' | echohl NONE
+  if lhs !~ '\v^((\w|_)*\W*$|\W+(\w|_)|\W+((\w|_)+\W+)+)$'
+    echohl ErrorMsg | echoerr 'The non-word characters in the alias name must: Either enclose the word characters Or be all last Or be all first and followed by at most one word character!' | echohl NONE
     return
   endif
 
