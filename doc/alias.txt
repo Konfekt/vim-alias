@@ -55,7 +55,29 @@ CONFIGURATION                                        *alias-configuration*
 
 
 ==============================================================================
-DRAWBACKs:
+FAQ:
+
+  - The alias
+
+  Alias -range a alias
+
+  does not expand after a range ending in a word character such as .,'m or
+  .,.+3, that is, for example
+
+    .,.+3a<space>
+
+  does not expand to
+
+  .,.+3alias
+
+  This is because <space> after '3alias' checks if the command-line
+  abbreviation '3alias' expands, and not 'alias'.
+
+  Instead, add a space after the range, that is,
+
+  .,.+3 a
+
+  Then hitting <space> expands 'a' to 'alias', as expected.
 
   - Since the expansion is in-place, Vim command-line history saves the
     <rhs>, not the <lhs>. This means you can't retrieve a command from
