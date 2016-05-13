@@ -4,11 +4,11 @@
 "   - adds a documentation, and
 "   - does some additional sanity checks.
 
-if exists("g:loaded_cmdalias")
+if exists('g:loaded_cmdalias')
   finish
 endif
 if v:version < 700
-  echomsg "cmdalias: You need Vim 7.0 or higher"
+  echomsg 'cmdalias: You need Vim 7.0 or higher'
   finish
 endif
 let g:loaded_cmdalias = 301
@@ -64,9 +64,9 @@ function! CmdAlias(...)
   while posparam <= (a:0 - 2)
     exe 'let param = a:' . posparam
     let posparam += 1
-    if param ==# '-range'
+    if param is# '-range'
       let numparams += 1 | let range = 1
-    elseif param ==# '-buffer'
+    elseif param is# '-buffer'
       let numparams += 1 | let bufferlocal = 1
     else
       echohl ErrorMsg | echo 'Only -range or -buffer allowed as optional parameters' | echohl NONE
@@ -79,9 +79,9 @@ function! CmdAlias(...)
   exe 'let rhs = a:' . (2 + numparams)
   " double all single quotes so that cabbrev expression correctly interpeted
   let  rhs = substitute(rhs, "'", "''", 'g')
-  let  rhs = substitute(rhs, "|", "<bar>", 'g')
+  let  rhs = substitute(rhs, '|', '<bar>', 'g')
 
-  if lhs !~ '\v^((\w|_)*\W*$|\W+(\w|_)|\W+((\w|_)+\W+)+)$'
+  if lhs !~# '\v^((\w|_)*\W*$|\W+(\w|_)|\W+((\w|_)+\W+)+)$'
     echohl ErrorMsg | echoerr 'The non-word characters in the alias name must: Either enclose the word characters Or be all last Or be all first and followed by at most one word character!' | echohl NONE
     return
   endif
@@ -92,14 +92,14 @@ function! CmdAlias(...)
   endif
 
   exec 'cnoreabbr <expr>' . (bufferlocal ? '<buffer>' : '') . ' ' . lhs .
-        \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ")"
+        \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ')'
   let s:aliases[lhs] = rhs
 endfunction
 
 function! s:ExpandAlias(lhs, rhs, range)
   let prefixes_pattern = '\m\s*\%(\%(\m' . join(g:cmdaliasCmdPrefixes, '\|\m') . '\)\s\+\)*'
 
-  if getcmdtype() == ":"
+  if getcmdtype() is# ':'
     " Determine if we are at the start of the command-line.
     " getcmdpos() is 1-based.
     let partCmd = strpart(getcmdline(), 0, getcmdpos())
@@ -114,7 +114,7 @@ endfunction
 
 function! UnAlias(...)
   if a:0 == 0
-    echohl ErrorMsg | echo "No aliases specified" | echohl NONE
+    echohl ErrorMsg | echo 'No aliases specified' | echohl NONE
     return
   endif
 
@@ -122,7 +122,7 @@ function! UnAlias(...)
   "let aliasesToRemove = map(filter(copy(s:aliases), 'index(a:000, v:val[0]) != -1'), 'v:val[0]')
   if len(aliasesToRemove) != a:0
     let badAliases = filter(copy(a:000), 'index(aliasesToRemove, v:val) == -1')
-    echohl ErrorMsg | echo "No such aliases: " . join(badAliases, ' ') | echohl NONE
+    echohl ErrorMsg | echo 'No such aliases: ' . join(badAliases, ' ') | echohl NONE
     return
   endif
   for alias in aliasesToRemove
@@ -139,7 +139,7 @@ function! s:Aliases(...)
   endif
   if len(goodAliases) > 0
     let maxLhsLen = max(map(copy(goodAliases), 'strlen(v:val[0])'))
-    echo join(map(copy(goodAliases), 'printf("%-".maxLhsLen."s %s", v:val, s:aliases[v:val])'), "\n")
+    echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s", v:val, s:aliases[v:val])'), '\n')
   endif
 endfunction
 
