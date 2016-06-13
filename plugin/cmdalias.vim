@@ -102,7 +102,7 @@ function! s:ExpandAlias(lhs, rhs, range)
   if getcmdtype() is# ':'
     " Determine if we are at the start of the command-line.
     " getcmdpos() is 1-based.
-    let partCmd = strpart(getcmdline(), 0, getcmdpos())
+    let partCmd = strpart(getcmdline(), 0, getcmdpos()-1)
     let alias_pattern = '\V' . escape(a:lhs,'\')
     if partCmd =~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
       return a:rhs
