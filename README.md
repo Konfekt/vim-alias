@@ -20,6 +20,23 @@ the alias is substituted in-place.
     :Aliases [<lhs> ...]
 ```
 
+To define the Aliases after Vim has started up, define them in
+`~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`
+
+```vim
+if exists('s:loaded_vimafter')
+  silent doautocmd VimAfter VimEnter *
+else
+  let s:loaded_vimafter = 1
+  augroup VimAfter
+    autocmd!
+    autocmd VimEnter * source ~/.vim/after/vimrc.vim
+  augroup END
+endif
+```
+
+and define them in `~/.vim/after/vimrc.vim`.
+
 ### Examples:
 
 ```vim

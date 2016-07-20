@@ -18,14 +18,29 @@ ABOUT                                               *alias-about*
 ==============================================================================
 USAGE                                               *alias-usage*
 
-    :Alias [-range] [-buffer] <lhs> <rhs>
+  :Alias [-range] [-buffer] <lhs> <rhs>
 
-    or
+  or
 
-    :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
+  :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
 
-    :UnAlias <lhs> ...
-    :Aliases [<lhs> ...]
+  :UnAlias <lhs> ...
+  :Aliases [<lhs> ...]
+
+  To define the Aliases after Vim has started up, define them in
+  `~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`
+
+  if exists('s:loaded_vimafter')
+    silent doautocmd VimAfter VimEnter *
+  else
+    let s:loaded_vimafter = 1
+    augroup VimAfter
+      autocmd!
+      autocmd VimEnter * source ~/.vim/after/vimrc.vim
+    augroup END
+  endif
+
+  and define them in `~/.vim/after/vimrc.vim`.
 
   Examples:
 
