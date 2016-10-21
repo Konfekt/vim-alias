@@ -113,7 +113,7 @@ function! s:ExpandAlias(lhs, rhs, range)
       let trigger_char = nr2char(trigger)
       let lhs = a:lhs.trigger_char
       let len_lhs = len(lhs)
-      if len(filter(keys(s:aliases), "v:val[0:len_lhs-1] ==# lhs"))
+      if len(filter(keys(s:aliases), "v:val[0:len_lhs-1] ==# lhs && v:val !=# a:lhs"))
         return a:lhs
       endif
     endif
