@@ -42,17 +42,17 @@ endif
 " Define a new command alias.
 function! CmdAlias(...)
   if a:0 is 0
-    echohl ErrorMsg | echo 'Neither <lhs> nor <rhs> specified for alias' | echohl NONE
+    echoerr 'Neither <lhs> nor <rhs> specified for alias'
     return
   endif
 
   if a:0 is 1
-    echohl ErrorMsg | echo 'No <rhs> specified for alias' | echohl NONE
+    echoerr 'No <rhs> specified for alias'
     return
   endif
 
   if a:0 > 4
-    echohl ErrorMsg | echo 'Too many parameters. Use Alias [-buffer] [-range] <lhs> <rhs>!' | echohl NONE
+    echoerr 'Too many parameters. Use Alias [-buffer] [-range] <lhs> <rhs>!'
     return
   endif
 
@@ -69,7 +69,7 @@ function! CmdAlias(...)
     elseif param is# '-buffer'
       let numparams += 1 | let bufferlocal = 1
     else
-      echohl ErrorMsg | echo 'Only -range or -buffer allowed as optional parameters' | echohl NONE
+      echoerr 'Only -range or -buffer allowed as optional parameters'
       return
     endif
   endwhile
@@ -82,12 +82,12 @@ function! CmdAlias(...)
   let  rhs = substitute(rhs, '|', '<bar>', 'g')
 
   if lhs !~# '\v^((\w|_)*\W*$|\W+(\w|_)|\W+((\w|_)+\W+)+)$'
-    echohl ErrorMsg | echoerr 'The non-word characters in the alias name must: Either enclose the word characters Or be all last Or be all first and followed by at most one word character!' | echohl NONE
+    echoerr 'The non-word characters in the alias name must: Either enclose the word characters Or be all last Or be all first and followed by at most one word character!'
     return
   endif
 
   if has_key(s:aliases, rhs)
-    echohl ErrorMsg | echo "Another alias can't be used as <rhs>" | echohl NONE
+    echoerr "Another alias can't be used as <rhs>"
     return
   endif
 
@@ -104,17 +104,29 @@ function! s:ExpandAlias(lhs, rhs, range)
     " getcmdpos() is 1-based.
     let partCmd = strpart(getcmdline(), 0, getcmdpos()-1)
     let alias_pattern = '\V' . escape(a:lhs,'\')
+
+    " Check wether LHS plus trigger char is the LHS of another Alias.
+    " For example, with 'Alias F' and 'Alias F.', and '.' not in 'iskeyword',
+    " typing '.' after 'F' would trigger the RHS of 'Alias F' already.
+    let trigger = nr2char(getchar(1))
+    if !empty(trigger) && trigger isnot# ' '
+      let lhs = a:lhs.trigger
+      let len_lhs = len(lhs)
+      if len(filter(keys(s:aliases), 'v:val[0:len_lhs-1] ==# lhs && v:val !=# a:lhs'))
+        return a:lhs
+      endif
+    endif
+
     if partCmd =~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
       return a:rhs
     endif
   endif
   return a:lhs
-
 endfunction
 
 function! UnAlias(...)
   if a:0 == 0
-    echohl ErrorMsg | echo 'No aliases specified' | echohl NONE
+    echoerr 'No aliases specified'
     return
   endif
 
@@ -122,7 +134,7 @@ function! UnAlias(...)
   "let aliasesToRemove = map(filter(copy(s:aliases), 'index(a:000, v:val[0]) != -1'), 'v:val[0]')
   if len(aliasesToRemove) != a:0
     let badAliases = filter(copy(a:000), 'index(aliasesToRemove, v:val) == -1')
-    echohl ErrorMsg | echo 'No such aliases: ' . join(badAliases, ' ') | echohl NONE
+    echoerr 'No such aliases: ' . join(badAliases, ' ')
     return
   endif
   for alias in aliasesToRemove
@@ -139,7 +151,7 @@ function! s:Aliases(...)
   endif
   if len(goodAliases) > 0
     let maxLhsLen = max(map(copy(goodAliases), 'strlen(v:val[0])'))
-    echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s", v:val, s:aliases[v:val])'), '\n')
+    echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s\n", v:val, s:aliases[v:val])'), '')
   endif
 endfunction
 
