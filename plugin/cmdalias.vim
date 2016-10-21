@@ -104,12 +104,24 @@ function! s:ExpandAlias(lhs, rhs, range)
     " getcmdpos() is 1-based.
     let partCmd = strpart(getcmdline(), 0, getcmdpos()-1)
     let alias_pattern = '\V' . escape(a:lhs,'\')
+
+    " Check that the lhs with the trigger char is not used in an abbreviation
+    " itself, i.e. with alias 'F' and 'F.', and '.' not in 'iskeyword', typing
+    " '.' would trigger the expansion of 'F' already.
+    let trigger = getchar(1)
+    if trigger && trigger != 32  " space
+      let trigger_char = nr2char(trigger)
+      let lhs = a:lhs.trigger_char
+      let len_lhs = len(lhs)
+      if len(filter(keys(s:aliases), "v:val[0:len_lhs-1] ==# lhs"))
+        return a:lhs
+      endif
+    endif
     if partCmd =~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
       return a:rhs
     endif
   endif
   return a:lhs
-
 endfunction
 
 function! UnAlias(...)
