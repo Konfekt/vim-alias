@@ -97,31 +97,32 @@ function! CmdAlias(...)
 endfunction
 
 function! s:ExpandAlias(lhs, rhs, range)
+  " Check whether we are in command line
+  if getcmdtype() isnot# ':'
+    return a:lhs
+  endif
+
+  " Check whether cursor is at start of commandline
+  let partCmd = strpart(getcmdline(), 0, getcmdpos()-1)
+  let alias_pattern = '\V' . escape(a:lhs,'\')
   let prefixes_pattern = '\m\s*\%(\%(\m' . join(g:cmdaliasCmdPrefixes, '\|\m') . '\)\s\+\)*'
+  if partCmd !~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
+    return a:lhs
+  endif
 
-  if getcmdtype() is# ':'
-    " Determine if we are at the start of the command-line.
-    " getcmdpos() is 1-based.
-    let partCmd = strpart(getcmdline(), 0, getcmdpos()-1)
-    let alias_pattern = '\V' . escape(a:lhs,'\')
-
-    " Check wether LHS plus trigger char is the LHS of another Alias.
-    " For example, with 'Alias F' and 'Alias F.', and '.' not in 'iskeyword',
-    " typing '.' after 'F' would trigger the RHS of 'Alias F' already.
-    let trigger = nr2char(getchar(1))
-    if !empty(trigger) && trigger isnot# ' '
-      let lhs = a:lhs.trigger
-      let len_lhs = len(lhs)
-      if len(filter(keys(s:aliases), 'v:val[0:len_lhs-1] ==# lhs && v:val !=# a:lhs'))
-        return a:lhs
-      endif
-    endif
-
-    if partCmd =~# '\m^' . prefixes_pattern . (a:range ? s:range_pattern : '') . alias_pattern . '\m$'
-      return a:rhs
+  " Check whether LHS plus trigger char is the LHS of another Alias.
+  " For example, with 'Alias F' and 'Alias F.', and '.' not in 'iskeyword',
+  " typing '.' after 'F' already triggers the RHS of 'Alias F'.
+  let trigger = nr2char(getchar(1))
+  if !empty(trigger) && trigger isnot# ' '
+    let lhs = a:lhs . trigger
+    let len_lhs = len(lhs)
+    if !empty(filter(keys(s:aliases), 'v:val[0:len_lhs-1] is# lhs && v:val isnot# a:lhs'))
+      return a:lhs
     endif
   endif
-  return a:lhs
+
+  return a:rhs
 endfunction
 
 function! UnAlias(...)
