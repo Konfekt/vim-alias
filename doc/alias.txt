@@ -75,28 +75,43 @@ FAQ:
 
   - The alias
 
-  Alias -range a alias
+      Alias -range a alias
 
-  does not expand after a range ending in a word character such as .,'m or
-  .,.+3, that is, for example
+    does not expand after a range ending in a word character such as .,'m or
+    .,.+3, that is, for example
 
-    .,.+3a<space>
+      .,.+3a<space>
 
-  does not expand to
+    does not expand to
 
-  .,.+3alias
+      .,.+3alias
 
-  This is because <space> after '3alias' checks if the command-line
-  abbreviation '3alias' expands, and not 'alias'.
+    This is because <space> after '3alias' checks if the command-line
+    abbreviation '3alias' expands, and not 'alias'.
 
-  Instead, add a space after the range, that is,
+    Instead, add a space after the range, that is,
 
-  .,.+3 a
+      .,.+3 a
 
-  Then hitting <space> expands 'a' to 'alias', as expected.
+    Then hitting <space> expands 'a' to 'alias', as expected.
 
-  - Since the expansion is in-place, Vim command-line history saves the
-    <rhs>, not the <lhs>. This means you can't retrieve a command from
-    history by partially typing the <lhs>. Instead, type the <rhs> for this purpose.
+  - If one alias extends another by nonword-characters, for example
+
+      Alias f  echo\ 'f'
+      Alias f. echo\ 'f.'
+
+    then the shorter alias, here 'f', expands only after `<space>` or `<cr>`is
+    hit.
+
+    Note: an alias that extends another and allows for a range does not expand
+    directly after a range. For example, with the above Aliases f and f.,
+
+    '<,'>f.
+
+    does not expand.
+
+  - Since the expansion is in-place, Vim command-line history saves the <rhs>,
+    not the <lhs>. This means you can't retrieve a command from history by
+    partially typing the <lhs>. Instead, type the <rhs> for this purpose.
 
 vim:ft=help:et:ts=2:sw=2:sts=2:norl:noma:nospell
