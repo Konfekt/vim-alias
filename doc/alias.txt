@@ -95,18 +95,16 @@ FAQ:
 
     Then hitting <space> expands 'a' to 'alias', as expected.
 
-  - If one alias extends another by nonword-characters, for example
+  - If one alias that allows for a range extends another by
+    nonword-characters, for example
 
       Alias f  echo\ 'f'
       Alias f. echo\ 'f.'
 
-    then the shorter alias, here 'f', expands only after `<space>` or `<cr>`is
-    hit.
+    then the longer alias, here 'f.' does not expand directly after a range.
+    For example, with the above Aliases f and f.,
 
-    Note: an alias that extends another and allows for a range does not expand
-    directly after a range. For example, with the above Aliases f and f.,
-
-    '<,'>f.
+      '<,'>f.
 
     does not expand.
 
