@@ -47,6 +47,7 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Alias            th   tab\ help
     :Alias            sft  setfiletype
     :Alias            g    !git
+    :Alias            g!   g!
     :UnAlias          g
     :Aliases
 ```

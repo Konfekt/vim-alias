@@ -51,6 +51,7 @@ USAGE                                               *alias-usage*
     :Alias            F    find\ *<c-r>=EatChar("\ ")<cr>
     :Alias            sft  setfiletype
     :Alias            g    !git
+    :Alias            g!   g!
     :UnAlias          g
     :Aliases
 
