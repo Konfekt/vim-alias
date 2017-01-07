@@ -80,7 +80,7 @@ Plug 'Konfekt/vim-alias'
 Credits
 -------
 
-This plugin builds and improves on cmdalias.vim 3.0 by Hari Krishna Dara by
+This plugin builds and improves on [cmdalias.vim 3.0](http://www.vim.org/scripts/script.php?script_id=746) by Hari Krishna Dara by
 
 - allowing for aliases of commands preceded by a range (like :Alias -range dg
   diffget),
