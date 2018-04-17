@@ -16,8 +16,8 @@ the alias is substituted in-place.
 
 ```vim
     :Alias [-range] [-buffer] <lhs> <rhs>
-    :UnAlias <lhs> ...
-    :Aliases [<lhs> ...]
+    :UnAlias [-buffer]  <lhs> ...
+    :Aliases [-buffer] [<lhs> ...]
 ```
 
 To define the Aliases after Vim has started up, define them in

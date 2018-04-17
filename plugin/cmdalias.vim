@@ -32,12 +32,19 @@ let s:range_pattern =  '\v(%('
       \ . ')|)\s*'
 
 command! -nargs=+ Alias   :call CmdAlias(<f-args>)
-command! -nargs=* UnAlias :call UnAlias(<f-args>)
+command! -nargs=+ UnAlias :call UnAlias(<f-args>)
 command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
 
-if ! exists('s:aliases')
-  let s:aliases = {}
+if !exists('g:cmdalias_aliases')
+  let g:cmdalias_aliases = {}
 endif
+
+" Sadly, these autocmd's cannot ensure that b:cmdalias_aliases is defined.
+" augroup cmdalias
+"   autocmd!
+"   autocmd CmdWinEnter,BufNew,BufReadPre * let b:cmdalias_aliases = {}
+" augroup end
+" silent doautocmd cmdalias BufNew,BufReadPre *
 
 " Define a new command alias.
 function! CmdAlias(...)
@@ -86,17 +93,22 @@ function! CmdAlias(...)
     return
   endif
 
-  if has_key(s:aliases, rhs)
+  if has_key(g:cmdalias_aliases, rhs)
     echoerr "Another alias can't be used as <rhs>"
     return
   endif
 
   exec 'cnoreabbr <expr>' . (bufferlocal ? '<buffer>' : '') . ' ' . lhs .
-        \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ')'
-  let s:aliases[lhs] = rhs
+        \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ', ' . string(bufferlocal) . ')'
+  if bufferlocal 
+    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
+    let b:cmdalias_aliases[lhs] = rhs
+  else
+    let g:cmdalias_aliases[lhs] = rhs
+  endif
 endfunction
 
-function! s:ExpandAlias(lhs, rhs, range)
+function! s:ExpandAlias(lhs, rhs, range, bufferlocal)
   " Check whether we are in command line
   if getcmdtype() isnot# ':'
     return a:lhs
@@ -110,6 +122,13 @@ function! s:ExpandAlias(lhs, rhs, range)
     return a:lhs
   endif
 
+  if eval(a:bufferlocal)
+    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
+    let aliases  = b:cmdalias_aliases
+  else
+    let aliases = g:cmdalias_aliases
+  endif
+
   " Check whether LHS plus trigger char is the LHS of another Alias.
   " For example, with 'Alias F' and 'Alias F.', and '.' not in 'iskeyword',
   " typing '.' after 'F' already triggers the RHS of 'Alias F'.
@@ -117,7 +136,7 @@ function! s:ExpandAlias(lhs, rhs, range)
   if !empty(trigger) && trigger isnot# ' '
     let lhs = a:lhs . trigger
     let len_lhs = len(lhs)
-    if !empty(filter(keys(s:aliases), 'v:val[0:len_lhs-1] is# lhs && v:val isnot# a:lhs'))
+    if !empty(filter(keys(aliases), 'v:val[0:len_lhs-1] is# lhs && v:val isnot# a:lhs'))
       return a:lhs
     endif
   endif
@@ -126,33 +145,58 @@ function! s:ExpandAlias(lhs, rhs, range)
 endfunction
 
 function! UnAlias(...)
-  if a:0 == 0
+  if a:0 > 0 && a:1 is# '-buffer'
+    let bufferlocal = 1
+    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
+    let aliases  = b:cmdalias_aliases
+    let list     = copy(a:000[1:])
+    let numparams = a:0-1
+  else
+    let bufferlocal = 0
+    let aliases  = g:cmdalias_aliases
+    let list     = copy(a:000)
+    let numparams = a:0
+  endif
+
+  if numparams == 0
     echoerr 'No aliases specified'
     return
   endif
 
-  let aliasesToRemove = filter(copy(a:000), 'has_key(s:aliases, v:val) != 0')
-  "let aliasesToRemove = map(filter(copy(s:aliases), 'index(a:000, v:val[0]) != -1'), 'v:val[0]')
-  if len(aliasesToRemove) != a:0
-    let badAliases = filter(copy(a:000), 'index(aliasesToRemove, v:val) == -1')
+  let aliasesToRemove = filter(list, 'has_key(aliases, v:val) != 0')
+  "let aliasesToRemove = map(filter(aliases, 'index(list, v:val[0]) != -1'), 'v:val[0]')
+  if len(aliasesToRemove) != numparams
+    let badAliases = filter(list, 'index(aliasesToRemove, v:val) == -1')
     echoerr 'No such aliases: ' . join(badAliases, ' ')
     return
   endif
   for alias in aliasesToRemove
-    exec 'cunabbr' alias
+    exec 'cunabbrev ' . (bufferlocal ? '<buffer>' : '') . ' ' . alias
   endfor
-  call filter(s:aliases, 'index(aliasesToRemove, v:key) == -1')
+  call filter(aliases, 'index(aliasesToRemove, v:key) == -1')
 endfunction
 
 function! s:Aliases(...)
-  if a:0 == 0
-    let goodAliases = keys(s:aliases)
+  if a:0 > 0 && a:1 is# '-buffer'
+    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
+    let aliases  = b:cmdalias_aliases
+    let list     = copy(a:000[1:])
+    let numparams = a:0-1
   else
-    let goodAliases = filter(copy(a:000), 'has_key(s:aliases, v:val) != 0')
+    let aliases  = g:cmdalias_aliases
+    let list     = copy(a:000)
+    let numparams = a:0
   endif
+
+  if numparams == 0
+    let goodAliases = keys(aliases)
+  else
+    let goodAliases = filter(list, 'has_key(aliases, v:val) != 0')
+  endif
+
   if len(goodAliases) > 0
     let maxLhsLen = max(map(copy(goodAliases), 'strlen(v:val[0])'))
-    echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s\n", v:val, s:aliases[v:val])'), '')
+    echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s\n", v:val, aliases[v:val])'), '')
   endif
 endfunction
 

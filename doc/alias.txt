@@ -24,8 +24,8 @@ USAGE                                               *alias-usage*
 
   :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
 
-  :UnAlias <lhs> ...
-  :Aliases [<lhs> ...]
+  :UnAlias [-buffer] <lhs> ...
+  :Aliases [-buffer] [<lhs> ...]
 
   To define the Aliases after Vim has started up, define them in
   `~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`
