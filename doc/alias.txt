@@ -15,6 +15,9 @@ ABOUT                                               *alias-about*
   These command line abbreviations work like the bash aliases, except that
   the alias is substituted in-place.
 
+  Visit https://konfekt.github.io/blog/2016/10/03/get-the-leader-right to
+  know why an alias is most often preferable to a <leader> mapping!
+
 ==============================================================================
 USAGE                                               *alias-usage*
 
