@@ -1,20 +1,13 @@
 # vim-alias
 
 This plugin lets you define command-line abbreviations by `:Alias` which only expand at the beginning of the command prompt.
-
-You can pass the optional parameters
-
-  `-buffer`  or  `-range`
-
-to create a buffer local alias or one that accepts a range preceding the
-alias.
-
-These command line abbreviations work like the bash aliases, except that
-the alias is substituted in-place.
+These command-line abbreviations work like the bash aliases, except that the alias is substituted in-place.
 
 Check out [why](https://konfekt.github.io/blog/2016/10/03/get-the-leader-right) an alias is most often preferable to a `<leader>` mapping!
 
 ## Usage
+
+You can pass the optional parameters `-buffer` or `-range` to create a buffer-local alias or one that accepts a range preceding the alias.
 
 ```vim
     :Alias [-range] [-buffer] <lhs> <rhs>

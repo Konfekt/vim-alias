@@ -3,23 +3,18 @@
 ==============================================================================
 ABOUT                                               *alias-about*
 
-  This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt.
-
-  You can pass in the optional flags
-
-    -buffer  or  -range
-
-  to create buffer local aliases or ones that accept a range that precedes the
-  aliased command.
-
-  These command line abbreviations work like the bash aliases, except that
-  the alias is substituted in-place.
+  This plugin lets you define command-line abbreviations which only expand at
+  the beginning of the command prompt. These command-line abbreviations work
+  like the bash aliases, except that the alias is substituted in-place.
 
   Visit https://konfekt.github.io/blog/2016/10/03/get-the-leader-right to
   know why an alias is most often preferable to a <leader> mapping!
 
 ==============================================================================
 USAGE                                               *alias-usage*
+
+  You can pass in the optional flags -buffer or -range to create buffer-local
+  aliases or ones that accept a range that precedes the aliased command.
 
   :Alias [-range] [-buffer] <lhs> <rhs>
 
