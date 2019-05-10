@@ -15,19 +15,19 @@ USAGE                                               *alias-usage*
 
   You can pass in the optional flags -buffer or -range to create buffer-local
   aliases or ones that accept a range that precedes the aliased command.
-
+>
   :Alias [-range] [-buffer] <lhs> <rhs>
-
+<
   or
-
+>
   :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
 
   :UnAlias [-buffer] <lhs> ...
   :Aliases [-buffer] [<lhs> ...]
-
+<
   To define the Aliases after Vim has started up, define them in
   `~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`
-
+>
   if exists('s:loaded_vimafter')
     silent doautocmd VimAfter VimEnter *
   else
@@ -37,37 +37,50 @@ USAGE                                               *alias-usage*
       autocmd VimEnter * source ~/.vim/after/vimrc.vim
     augroup END
   endif
-
+<
   and define them in `~/.vim/after/vimrc.vim`.
 
   Examples:
-
+>
     :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
     :Alias   -buffer  spl  setlocal\ spell<bar>setlocal\ spelllang=en
     :Alias            w!!  write\ !sudo\ tee\ >\ /dev/null\ %
+    :Alias            F    find\ *<c-r>=Eatchar("\ ")<cr>
     :Alias            th   tab\ help
-    :Alias            F    find\ *<c-r>=EatChar("\ ")<cr>
     :Alias            sft  setfiletype
-    :Alias            g    !git
+    :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
+    :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
+    :Alias            g    Silent git
+    :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %<c-left><c-left><left>
     :Alias            g!   g!
     :UnAlias          g
     :Aliases
-
-  See :help abbreviations for Eatchar(c).
+<
+  See 'abbreviations' for `Eatchar(c)`. The command `:Silent` is defined as
+>
+    if has('unix') || has('win32unix')
+        command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !' . <q-args> | execute ':redraw!'
+    elseif has('win32')
+        command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !start /b ' . <q-args> | execute ':redraw!'
+    endif
+<
+The executable [tig](https://github.com/jonas/tig) is a text-mode interface
+for `git` and [translate-shell](https://github.com/soimort/translate-shell) a
+command-line translator.
 
 ==============================================================================
 CONFIGURATION                                        *alias-configuration*
 
   The variable 'g:cmdaliasCmdPrefixes' lists the patterns of all commands by
   which an alias command may be preceded and yet expand. It defaults to
-
+>
   let g:cmdaliasCmdPrefixes = [
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
     \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
     \ '\%(\%([.$]\|\d\+\)\%([,;]\%([.$]\|\d\+\)\)*\)\?\s*' .
     \ '\%(argdo\?!\?\|bufdo\?!\?\|windo\?\|tabdo\?\)' ]
-
+<
 
 ==============================================================================
 FAQ:

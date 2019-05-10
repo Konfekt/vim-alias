@@ -41,13 +41,27 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Alias            F    find\ *<c-r>=Eatchar("\ ")<cr>
     :Alias            th   tab\ help
     :Alias            sft  setfiletype
-    :Alias            g    !git
+    :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
+    :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
+    :Alias            g    Silent git
+    :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %<c-left><c-left><left>
+    :Alias -range     tl   !translate\ -no-warn\ -no-ansi\ -brief\ -to
     :Alias            g!   g!
     :UnAlias          g
     :Aliases
 ```
 
-  See :help abbreviations for Eatchar(c).
+See :help abbreviations for `Eatchar(c)`.
+The command `:Silent` is defined as
+```vim
+    if has('unix') || has('win32unix')
+        command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !' . <q-args> | execute ':redraw!'
+    elseif has('win32')
+        command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !start /b ' . <q-args> | execute ':redraw!'
+    endif
+```
+The executable [tig](https://github.com/jonas/tig) is a text-mode interface for `git` and [translate-shell](https://github.com/soimort/translate-shell) a command-line translator.
+
 
 ## Configuration
 
