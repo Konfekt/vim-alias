@@ -7,13 +7,18 @@ Check out [why](https://konfekt.github.io/blog/2016/10/03/get-the-leader-right) 
 
 ## Usage
 
-You can pass the optional parameters `-buffer` or `-range` to create a buffer-local alias or one that accepts a range preceding the alias.
-
 ```vim
-    :Alias [-range] [-buffer] <lhs> <rhs>
-    :UnAlias [-buffer]  <lhs> ...
-    :Aliases [-buffer] [<lhs> ...]
+    :Alias[!] [-range] [-buffer] <lhs> <rhs>
+    :UnAlias [-buffer] <lhs> ...
+    :Aliases [-buffer] [lhs] ...
 ```
+
+- To create an Alias, use `:Alias`.
+    Pass the optional parameters `-buffer` or `-range` to to create a buffer-local alias or one that accepts a range preceding the alias.
+    To override an existing alias, append `!` to `:Alias`.
+- To remove an alias, use `:UnAlias`.
+- To list all aliases, use `:Aliases`.
+    Restrict the output to all aliases whose name contains `...` by appending `...`.
 
 To define the Aliases after Vim has started up, define them in
 `~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`

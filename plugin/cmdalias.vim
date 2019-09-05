@@ -31,7 +31,7 @@ let s:range_pattern =  '\v(%('
       \ . '%(\s*[,;]\s*%([`''][.\^''"(){}<>[\][:alnum:]]|[.$]|\d+|\\[/?&]|/.+/?|\?.+\??)%([+\-]\d*)*)*'
       \ . ')|)\s*'
 
-command! -nargs=+ Alias   :call CmdAlias(<f-args>)
+command! -nargs=+ -bang Alias   :call CmdAlias(<bang>0, <f-args>)
 command! -nargs=+       UnAlias :call UnAlias(<f-args>)
 command! -nargs=*       Aliases :call <SID>Aliases(<f-args>)
 
@@ -47,7 +47,7 @@ endif
 " silent doautocmd cmdalias BufNew,BufReadPre *
 
 " Define a new command alias.
-function! CmdAlias(...)
+function! CmdAlias(bang, ...)
   if a:0 is 0
     echoerr 'Neither <lhs> nor <rhs> specified for alias'
     return
@@ -97,6 +97,7 @@ function! CmdAlias(...)
     if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
   endif
 
+  if !a:bang
     if bufferlocal && has_key(b:cmdalias_aliases, lhs)
       echoerr "Another buffer-local alias " . lhs . " can't be used as <lhs>"
       return
@@ -105,6 +106,7 @@ function! CmdAlias(...)
       echoerr "Another global alias " . lhs . " can't be used as <lhs>"
       return
     endif
+  endif
 
   exec 'cnoreabbr <expr>' . (bufferlocal ? '<buffer>' : '') . ' ' . lhs .
         \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ', ' . string(bufferlocal) . ')'
