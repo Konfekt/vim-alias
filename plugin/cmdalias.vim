@@ -32,8 +32,8 @@ let s:range_pattern =  '\v(%('
       \ . ')|)\s*'
 
 command! -nargs=+ Alias   :call CmdAlias(<f-args>)
-command! -nargs=+ UnAlias :call UnAlias(<f-args>)
-command! -nargs=* Aliases :call <SID>Aliases(<f-args>)
+command! -nargs=+       UnAlias :call UnAlias(<f-args>)
+command! -nargs=*       Aliases :call <SID>Aliases(<f-args>)
 
 if !exists('g:cmdalias_aliases')
   let g:cmdalias_aliases = {}
@@ -93,15 +93,22 @@ function! CmdAlias(...)
     return
   endif
 
-  if has_key(g:cmdalias_aliases, rhs)
-    echoerr "Another alias can't be used as <rhs>"
-    return
+  if bufferlocal 
+    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
   endif
+
+    if bufferlocal && has_key(b:cmdalias_aliases, lhs)
+      echoerr "Another buffer-local alias " . lhs . " can't be used as <lhs>"
+      return
+    endif
+    if !bufferlocal && has_key(g:cmdalias_aliases, lhs)
+      echoerr "Another global alias " . lhs . " can't be used as <lhs>"
+      return
+    endif
 
   exec 'cnoreabbr <expr>' . (bufferlocal ? '<buffer>' : '') . ' ' . lhs .
         \ " <SID>ExpandAlias('" . lhs . "', '" . rhs . "', " . string(range) . ', ' . string(bufferlocal) . ')'
   if bufferlocal 
-    if !exists('b:cmdalias_aliases') | let b:cmdalias_aliases = {} | endif
     let b:cmdalias_aliases[lhs] = rhs
   else
     let g:cmdalias_aliases[lhs] = rhs
