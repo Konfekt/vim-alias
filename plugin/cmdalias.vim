@@ -99,11 +99,15 @@ function! CmdAlias(bang, ...)
 
   if !a:bang
     if bufferlocal && has_key(b:cmdalias_aliases, lhs)
-      echoerr "Another buffer-local alias " . lhs . " can't be used as <lhs>"
+      if b:cmdalias_aliases[lhs] isnot# rhs
+        echoerr "There is already a different buffer-local alias " . lhs
+      endif
       return
     endif
     if !bufferlocal && has_key(g:cmdalias_aliases, lhs)
-      echoerr "Another global alias " . lhs . " can't be used as <lhs>"
+      if g:cmdalias_aliases[lhs] isnot# rhs
+        echoerr "There is already a different global alias " . lhs
+      endif
       return
     endif
   endif
