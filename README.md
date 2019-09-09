@@ -70,11 +70,11 @@ The executable [tig](https://github.com/jonas/tig) is a text-mode interface for 
 
 ## Configuration
 
-The variable `g:cmdaliasCmdPrefixes` lists the patterns of all commands by
+The variable `g:cmdalias_cmdprefixes` lists the patterns of all commands by
 which an alias command may be preceded and yet expand. It defaults to
 
 ```vim
-  let g:cmdaliasCmdPrefixes = [
+  let g:cmdalias_cmdprefixes = [
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
     \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
@@ -99,6 +99,7 @@ This plugin builds and improves on [cmdalias.vim 3.0](http://www.vim.org/scripts
 - allowing for aliases of commands preceded by a range (like :Alias -range dg
   diffget),
 - allowing for alias names ending in non-word chars (like :Alias w!! ...),
+- moving functions to autoload for faster startup of Vim,
 - having a Vim documentation, and
 - more checks for proper usage, more consistent parameter parsing and a finer
   check for blanks or commands (such as :  silent! ) preceding the alias.

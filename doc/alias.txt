@@ -17,7 +17,7 @@ USAGE                                               *alias-usage*
 <
   or
 >
-  :call CmdAlias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
+  :call alias#alias(['-range'], ['-buffer'], '<lhs>', '<rhs>')
 
   :UnAlias [-buffer] <lhs> ...
   :Aliases [-buffer] [lhs] ...
@@ -76,10 +76,10 @@ command-line translator.
 ==============================================================================
 CONFIGURATION                                        *alias-configuration*
 
-  The variable 'g:cmdaliasCmdPrefixes' lists the patterns of all commands by
+  The variable 'g:cmdalias_cmdprefixes' lists the patterns of all commands by
   which an alias command may be preceded and yet expand. It defaults to
 >
-  let g:cmdaliasCmdPrefixes = [
+  let g:cmdalias_cmdprefixes = [
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
     \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
