@@ -1,6 +1,6 @@
 # vim-alias
 
-This plugin lets you define command-line abbreviations by `:Alias` which only expand at the beginning of the command prompt.
+This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt by a command `:Alias`.
 These command-line abbreviations work like the bash aliases, except that the alias is substituted in-place.
 
 Check out [why](https://konfekt.github.io/blog/2016/10/03/get-the-leader-right) an alias is most often preferable to a `<leader>` mapping!
@@ -48,7 +48,7 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Alias            sft  setfiletype
     :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
     :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
-    :Alias            g    Silent git
+    :Alias            g    Silent\ git
     :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %<c-left><c-left><left>
     :Alias -range     tl   !translate\ -no-warn\ -no-ansi\ -brief\ -to
     :Alias            g!   g!

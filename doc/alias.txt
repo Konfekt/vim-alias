@@ -22,12 +22,12 @@ USAGE                                               *alias-usage*
   :UnAlias [-buffer] <lhs> ...
   :Aliases [-buffer] [lhs] ...
 <
-  - To create an alias, use :Alias.
+  - To create an alias, use the command *Alias* .
     Pass the optional parameters -buffer or -range to create a buffer-local
     alias or one that accepts a range preceding the alias.
     To override an existing alias, append ! to :Alias.
-  - To remove an alias, use :UnAlias.
-  - To list all aliases, use :Aliases.
+  - To remove an alias, use the command *UnAlias* .
+  - To list all aliases, use the command *Aliases* .
     Restrict the output to all aliases whose name contains .. by appending ...
 >
   To define the Aliases after Vim has started up, define them in
@@ -55,7 +55,7 @@ USAGE                                               *alias-usage*
     :Alias            sft  setfiletype
     :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
     :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
-    :Alias            g    Silent git
+    :Alias            g    Silent\ git
     :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %<c-left><c-left><left>
     :Alias            g!   g!
     :UnAlias          g
@@ -76,7 +76,7 @@ command-line translator.
 ==============================================================================
 CONFIGURATION                                        *alias-configuration*
 
-  The variable 'g:cmdalias_cmdprefixes' lists the patterns of all commands by
+  The variable *g:cmdalias_cmdprefixes* lists the patterns of all commands by
   which an alias command may be preceded and yet expand. It defaults to
 >
   let g:cmdalias_cmdprefixes = [
