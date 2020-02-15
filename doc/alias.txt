@@ -3,12 +3,12 @@
 ==============================================================================
 ABOUT                                               *alias-about*
 
-  This plugin lets you define command-line abbreviations which only expand at
+  This plugin lets you define command-line abbreviations that only expand at
   the beginning of the command prompt. These command-line abbreviations work
   like the bash aliases, except that the alias is substituted in-place.
 
   Visit https://konfekt.github.io/blog/2016/10/03/get-the-leader-right to
-  know why an alias is most often preferable to a <leader> mapping!
+  find out why an alias is most often preferable to a <leader> mapping!
 
 ==============================================================================
 USAGE                                               *alias-usage*
@@ -63,7 +63,7 @@ USAGE                                               *alias-usage*
 <
   See 'abbreviations' for Eatchar(c). The command :Silent is defined as
 >
-    if has('unix') || has('win32unix')
+    if has('unix')
         command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !' . <q-args> | execute ':redraw!'
     elseif has('win32')
         command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !start /b ' . <q-args> | execute ':redraw!'

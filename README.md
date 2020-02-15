@@ -1,6 +1,6 @@
 # vim-alias
 
-This plugin lets you define command-line abbreviations which only expand at the beginning of the command prompt by a command `:Alias`.
+This plugin lets you define command-line abbreviations that only expand at the beginning of the command-line prompt by a command `:Alias`.
 These command-line abbreviations work like the bash aliases, except that the alias is substituted in-place.
 
 Check out [why](https://konfekt.github.io/blog/2016/10/03/get-the-leader-right) an alias is most often preferable to a `<leader>` mapping!
@@ -58,15 +58,16 @@ and define them in `~/.vim/after/vimrc.vim`.
 
 See :help abbreviations for `Eatchar(c)`.
 The command `:Silent` is defined as
+
 ```vim
-    if has('unix') || has('win32unix')
+    if has('unix')
         command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !' . <q-args> | execute ':redraw!'
     elseif has('win32')
         command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent<bang> !start /b ' . <q-args> | execute ':redraw!'
     endif
 ```
-The executable [tig](https://github.com/jonas/tig) is a text-mode interface for `git` and [translate-shell](https://github.com/soimort/translate-shell) a command-line translator.
 
+The executable [tig](https://github.com/jonas/tig) is a text-mode interface for `git` and [translate-shell](https://github.com/soimort/translate-shell) a command-line translator.
 
 ## Configuration
 
