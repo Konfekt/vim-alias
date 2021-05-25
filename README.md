@@ -40,8 +40,8 @@ and define them in `~/.vim/after/vimrc.vim`.
 ### Examples:
 
 ```vim
-    :Alias   -range   dg   <c-r>=&l:diff?"diffget":"dg"<cr>
-    :Alias   -buffer  spl  setlocal\ spell<bar>setlocal\ spelllang=en
+    :Alias -range     dg   <c-r>=&l:diff?"diffget":"dg"<cr>
+    :Alias -buffer    spl  setlocal\ spell<bar>setlocal\ spelllang=en
     :Alias            w!!  write\ !sudo\ tee\ >\ /dev/null\ %
     :Alias            F    find\ *<c-r>=Eatchar("\ ")<cr>
     :Alias            th   tab\ help
@@ -49,7 +49,7 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
     :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
     :Alias            g    Silent\ git
-    :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %<c-left><c-left><left>
+    :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %:S<c-left><c-left><left>
     :Alias -range     tl   !translate\ -no-warn\ -no-ansi\ -brief\ -to
     :Alias            g!   g!
     :UnAlias          g
