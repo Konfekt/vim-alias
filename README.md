@@ -76,6 +76,9 @@ which an alias command may be preceded and yet expand. It defaults to
 
 ```vim
   let g:cmdalias_cmdprefixes = [
+    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)\?\s*' .
+    \ 'ter\%[minal]\s*' .
+    \ '\%(++\%(close\|noclose\|open\|curwin\|hidden\|norestore\|shell\|kill=\a*\|rows=\d\+\|cols=\d\+\|eof=\S*\|pty=\a*\|api=\w\+\)\)\?',
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
     \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
