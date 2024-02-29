@@ -14,7 +14,9 @@ set cpo&vim
 
 if !exists('g:cmdalias_cmdprefixes')
   let g:cmdalias_cmdprefixes = [
-    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)',
+    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)', 'tab',
+    \ 'conf\%[irm]', 'bro\%[wse]',
+    \ '\%(keepa\%[lt]\|keepj\%[umps]\|kee\%[pmarks]\|keepp\%[atterns]\)', 'loc\%[kmarks]', 'nos\%[wapfile]',
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
     \ 'ld!\?', '[cl]fd!\?', '[cl]f\?do!\?',
