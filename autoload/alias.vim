@@ -94,4 +94,3 @@ function! alias#aliases(...)
     echo join(map(copy(goodAliases), 'printf("%-" . maxLhsLen . "s %s\n", v:val, aliases[v:val])'), '')
   endif
 endfunction
-
