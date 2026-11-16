@@ -20,7 +20,9 @@ Check out [why](https://konfekt.github.io/blog/2016/10/03/get-the-leader-right) 
 - To list all aliases, use `:Aliases`.
     Restrict the output to all aliases whose names contain, say `xyz`, by `:Aliases xyz`.
 
-To define the Aliases after Vim has started up, define them in
+In a script, `:call alias#alias('-range', 'dg', 'diffget')` does the same as `:Alias -range dg diffget`.
+
+To define the aliases after Vim has started up, define them in
 `~/.vim/after/plugin/alias.vim`, or add to `~/.vimrc`
 
 ```vim
@@ -46,8 +48,8 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Alias            F    find\ *<c-r>=Eatchar("\ ")<cr>
     :Alias            th   tab\ help
     :Alias            sft  setfiletype
-    :Alias -range     il   ilist\ /\v/<left><c-r>=EatChar("\ ")<cr>
-    :Alias -range     dl   dlist\ //<left><c-r>=EatChar("\ ")<cr>
+    :Alias -range     il   ilist\ /\v/<left><c-r>=Eatchar("\ ")<cr>
+    :Alias -range     dl   dlist\ //<left><c-r>=Eatchar("\ ")<cr>
     :Alias            g    Silent\ git
     :Alias            gbl  Silent\ tig\ blame\ +<c-r>=line('.')<cr>\ --\ %:S<c-left><c-left><left>
     :Alias -range     tl   !translate\ -no-warn\ -no-ansi\ -brief\ -to
@@ -56,7 +58,7 @@ and define them in `~/.vim/after/vimrc.vim`.
     :Aliases
 ```
 
-See :help abbreviations for `Eatchar(c)`.
+See `:help abbreviations` for `Eatchar(c)`.
 The command `:Silent` is defined as
 
 ```vim
