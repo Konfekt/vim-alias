@@ -17,12 +17,12 @@ USAGE                                               *alias-usage*
   :UnAlias [-buffer] <lhs> ...
   :Aliases [-buffer] [lhs] ...
 <
-  - To create an alias, use the command *Alias* .
+  - To create an alias, use the command *:Alias* .
     Pass the optional parameters -buffer or -range to create a buffer-local
     alias or one that accepts a range preceding the alias.
     To override an existing alias, append ! to :Alias.
-  - To remove an alias, use the command *UnAlias* .
-  - To list all aliases, use the command *Aliases* .
+  - To remove an alias, use the command *:UnAlias* .
+  - To list all aliases, use the command *:Aliases* .
     Restrict the output to all aliases whose names contain, say xyz, by
     :Aliases xyz.
 
@@ -83,8 +83,8 @@ CONFIGURATION                                        *alias-configuration*
   which an alias command may be preceded and yet expand. It defaults to
 >
   let g:cmdalias_cmdprefixes = [
-    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)', 'tab',
-    \ 'conf\%[irm]', 'bro\%[wse]',
+    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)', '\d*tab',
+    \ 'conf\%[irm]', 'bro\%[wse]', 'noa\%[utocmd]', 'sandbox', 'hid\%[e]',
     \ '\%(keepa\%[lt]\|keepj\%[umps]\|kee\%[pmarks]\|keepp\%[atterns]\)', 'loc\%[kmarks]', 'nos\%[wapfile]',
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',

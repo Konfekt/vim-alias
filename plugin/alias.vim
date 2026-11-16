@@ -11,8 +11,8 @@ set cpoptions&vim
 
 if !exists('g:cmdalias_cmdprefixes')
   let g:cmdalias_cmdprefixes = [
-    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)', 'tab',
-    \ 'conf\%[irm]', 'bro\%[wse]',
+    \ '\%(vert\%[ical]\|hor\%[izontal]\|lefta\%[bove]\|abo\%[veleft]\|rightb\%[elow]\|bel\%[owright]\|to\%[pleft]\|bo\%[tright]\)', '\d*tab',
+    \ 'conf\%[irm]', 'bro\%[wse]', 'noa\%[utocmd]', 'sandbox', 'hid\%[e]',
     \ '\%(keepa\%[lt]\|keepj\%[umps]\|kee\%[pmarks]\|keepp\%[atterns]\)', 'loc\%[kmarks]', 'nos\%[wapfile]',
     \ '\d*verb\%[ose]', 'debug', 'sil\%[ent]!\?', 'uns\%[ilent]', 'redir\?!\?',
     \ '.*[^|]|',
