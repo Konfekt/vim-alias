@@ -174,7 +174,25 @@ function! s:TestArgErrors() abort
   call s:Check('bad lhs', s:Error('Alias a!b c'), 'Vim(echoerr):The non-word characters in the alias name must: Either enclose the word characters Or be all last Or be all first and followed by at most one word character!')
 endfunction
 
-for s:test in ['BasicExpansion', 'BufferLocal', 'Redefine', 'PrefixOfOther', 'BarInRhs',
+" Bug: a global alias expanded although a buffer-local one extended it.
+function! s:TestPrefixOfBufferLocal() abort
+  call s:Reset()
+  Alias F echo\ 'F'
+  Alias -buffer F. echo\ 'F.'
+  call s:Check('global shorter alias', s:Typed('F '), "echo 'F' ")
+  call s:Check('buffer-local longer alias', s:Typed('F. '), "echo 'F.' ")
+endfunction
+
+function! s:TestMorePrefixes() abort
+  call s:Reset()
+  Alias th tab\ help
+  call s:Check('after noautocmd', s:Typed('noautocmd th '), 'noautocmd tab help ')
+  call s:Check('after sandbox', s:Typed('sandbox th '), 'sandbox tab help ')
+  call s:Check('after hide', s:Typed('hide th '), 'hide tab help ')
+  call s:Check('after 2tab', s:Typed('2tab th '), '2tab tab help ')
+endfunction
+
+for s:test in ['BasicExpansion', 'BufferLocal', 'Redefine', 'PrefixOfOther', 'PrefixOfBufferLocal', 'MorePrefixes', 'BarInRhs',
       \ 'QuoteInRhs', 'QuoteInLhs', 'BarInLhs', 'UnAlias', 'Aliases', 'Function', 'ArgErrors']
   try
     call call('s:Test' . s:test, [])

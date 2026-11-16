@@ -90,6 +90,7 @@ function! alias#define(bang, ...) abort
   let aliases[lhs] = rhs
 endfunction
 
+" {bufferlocal} is unused and kept for abbreviations defined before.
 function! alias#expand(lhs, rhs, range, bufferlocal) abort
   if getcmdtype() isnot# ':'
     return a:lhs
@@ -104,20 +105,16 @@ function! alias#expand(lhs, rhs, range, bufferlocal) abort
     return a:lhs
   endif
 
-  if a:bufferlocal
-    let aliases = get(b:, 'cmdalias_aliases', {})
-  else
-    let aliases = g:cmdalias_aliases
-  endif
-
-  " Check whether LHS plus trigger char is the LHS of another Alias.
-  " For example, with 'Alias F' and 'Alias F.', and '.' not in 'iskeyword',
-  " typing '.' after 'F' already triggers the RHS of 'Alias F'.
+  " Check whether LHS plus trigger char starts the LHS of another Alias,
+  " global or buffer-local. For example, with 'Alias F' and 'Alias F.', and
+  " '.' not in 'iskeyword', typing '.' after 'F' already triggers the RHS of
+  " 'Alias F'.
   let trigger = nr2char(getchar(1))
   if !empty(trigger) && trigger isnot# ' '
     let lhs = a:lhs . trigger
     let len_lhs = len(lhs)
-    if !empty(filter(keys(aliases), 'v:val[0 : len_lhs - 1] is# lhs && v:val isnot# a:lhs'))
+    let names = keys(g:cmdalias_aliases) + keys(get(b:, 'cmdalias_aliases', {}))
+    if !empty(filter(names, 'v:val[0 : len_lhs - 1] is# lhs'))
       return a:lhs
     endif
   endif
